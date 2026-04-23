@@ -1,13 +1,14 @@
+// This is your backend API route in Next.js
 import { getFailedRuns } from '@/lib/github';
 import { generatePostmortem } from '@/lib/ai';
 
 export async function GET(request) {
 
-  // Get owner and repo from the URL query
-  // Example: /api/postmortem?owner=microsoft&repo=vscode
+  // Get owner, repo and limit from the URL query
   const { searchParams } = new URL(request.url);
   const owner = searchParams.get('owner');
   const repo = searchParams.get('repo');
+  const limit = parseInt(searchParams.get('limit')) || 10;
 
   // Make sure both values exist
   if (!owner || !repo) {
@@ -19,7 +20,7 @@ export async function GET(request) {
 
   try {
     // Step 1 — fetch failed runs from GitHub
-    const runs = await getFailedRuns(owner, repo);
+    const runs = await getFailedRuns(owner, repo, limit);
 
     if (runs.length === 0) {
       return Response.json({ message: 'No failed runs found!' });

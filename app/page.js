@@ -19,6 +19,9 @@ export default function Home() {
   // Stores number of failures found
   const [totalFailures, setTotalFailures] = useState(0);
 
+  // Stores how many failures to fetch
+  const [limit, setLimit] = useState(10);
+
   // This runs when user clicks Generate Report
   async function handleGenerate() {
 
@@ -39,9 +42,9 @@ export default function Home() {
     setLoading(true);
 
     try {
-      // Call your Next.js API route
+      // Call your Next.js API route with limit parameter
       const response = await fetch(
-        `/api/postmortem?owner=${owner}&repo=${repoName}`
+        `/api/postmortem?owner=${owner}&repo=${repoName}&limit=${limit}`
       );
 
       const data = await response.json();
@@ -69,42 +72,32 @@ export default function Home() {
 
   // Export report as PDF
   function handleExportPDF() {
-    // Import jsPDF
     const { jsPDF } = require('jspdf');
 
-    // Create new PDF document
     const doc = new jsPDF();
 
-    // Set title
     doc.setFontSize(20);
-    doc.setTextColor(220, 50, 50); // red color
+    doc.setTextColor(220, 50, 50);
     doc.text('PostGen — Incident Postmortem Report', 20, 20);
 
-    // Set repo name
     doc.setFontSize(12);
-    doc.setTextColor(150, 150, 150); // gray color
+    doc.setTextColor(150, 150, 150);
     doc.text(`Repository: ${repo}`, 20, 32);
     doc.text(`Total Failures: ${totalFailures}`, 20, 40);
     doc.text(`Generated: ${new Date().toLocaleString()}`, 20, 48);
 
-    // Divider line
     doc.setDrawColor(220, 50, 50);
     doc.line(20, 52, 190, 52);
 
-    // Report content
     doc.setFontSize(11);
-    doc.setTextColor(40, 40, 40); // dark text
+    doc.setTextColor(40, 40, 40);
 
-    // Split report into lines that fit the page width
     const lines = doc.splitTextToSize(
       report.replace(/\*\*/g, '').replace(/##/g, ''),
       170
     );
 
-    // Add text starting below the header
     doc.text(lines, 20, 62);
-
-    // Save the PDF
     doc.save(`postmortem-${repo.replace('/', '-')}.pdf`);
   }
 
@@ -146,6 +139,23 @@ export default function Home() {
             >
               {loading ? 'Generating...' : 'Generate Report'}
             </button>
+          </div>
+
+          {/* Failure limit selector */}
+          <div className="mt-4 flex items-center gap-3">
+            <label className="text-gray-400 text-sm">
+              Fetch last:
+            </label>
+            <select
+              value={limit}
+              onChange={(e) => setLimit(parseInt(e.target.value))}
+              className="bg-gray-800 border border-gray-700 text-white text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-red-500 transition"
+            >
+              <option value={5}>5 failures</option>
+              <option value={10}>10 failures</option>
+              <option value={20}>20 failures</option>
+              <option value={30}>30 failures</option>
+            </select>
           </div>
 
           {/* Quick test buttons */}
@@ -216,7 +226,6 @@ export default function Home() {
             <div className="prose prose-invert max-w-none">
               {report.split('\n').map((line, i) => {
 
-                // Style headers like ## SUMMARY
                 if (line.startsWith('## ')) {
                   return (
                     <h3 key={i} className="text-red-400 font-bold text-lg mt-6 mb-2">
@@ -225,7 +234,6 @@ export default function Home() {
                   );
                 }
 
-                // Style bold text like **something**
                 if (line.startsWith('**') && line.endsWith('**')) {
                   return (
                     <p key={i} className="text-white font-semibold mt-4">
@@ -234,7 +242,6 @@ export default function Home() {
                   );
                 }
 
-                // Style numbered list items
                 if (line.match(/^\d+\./)) {
                   return (
                     <p key={i} className="text-gray-300 ml-4 mt-1">
@@ -243,7 +250,6 @@ export default function Home() {
                   );
                 }
 
-                // Style bullet points
                 if (line.startsWith('- ')) {
                   return (
                     <p key={i} className="text-gray-400 ml-4 mt-1">
@@ -252,12 +258,10 @@ export default function Home() {
                   );
                 }
 
-                // Empty lines
                 if (line.trim() === '') {
                   return <br key={i} />;
                 }
 
-                // Regular text
                 return (
                   <p key={i} className="text-gray-300 mt-1">
                     {line}
