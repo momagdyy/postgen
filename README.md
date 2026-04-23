@@ -1,36 +1,120 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🔴 PostGen
 
-## Getting Started
+> AI-powered deployment postmortem generator for GitHub Actions
 
-First, run the development server:
+**Live Demo → [postgen-ten.vercel.app](https://postgen-ten.vercel.app)**
+
+---
+
+## What is PostGen?
+
+PostGen automatically generates professional incident postmortem reports from GitHub Actions failures. Instead of spending hours writing incident reports manually, engineers get a structured report in seconds.
+
+**Before PostGen:**
+- Deployment fails at 2am
+- Engineer fixes it under pressure
+- Next day — sits down to write a full incident report from memory
+- Opens blank Google Doc and starts from scratch = 2 hours of work
+
+**After PostGen:**
+- Deployment fails
+- Open PostGen → enter repo name → click Generate
+- Professional report ready in 10 seconds
+- Engineer just reviews and exports = 5 minutes of work
+
+---
+
+## Features
+
+- 🔍 **Automatic failure detection** — fetches last 10 failed runs from any public GitHub repo
+- 🤖 **AI-powered reports** — generates structured postmortem using Llama 3 AI
+- 📋 **Copy to clipboard** — instantly copy report to share with your team
+- 📄 **Export as PDF** — download professional PDF report
+- ⚡ **No setup required** — just enter a repo name and go
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Frontend | Next.js 15, Tailwind CSS |
+| Backend | Next.js API Routes |
+| AI | Groq API (Llama 3.3 70B) |
+| Data | GitHub Actions API |
+| Hosting | Vercel |
+
+---
+
+## How It Works
+
+User enters a GitHub repository (e.g. microsoft/vscode)
+PostGen fetches the last 10 failed workflow runs via GitHub API
+Failure data is sent to Llama 3 AI with a structured prompt
+AI generates a professional postmortem report
+User can copy or export as PDF
+
+
+---
+
+## Running Locally
+
+### Prerequisites
+- Node.js 18+
+- GitHub Personal Access Token
+- Groq API Key (free at console.groq.com)
+
+### Setup
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Clone the repo
+git clone https://github.com/momagdyy/postgen.git
+cd postgen
+
+# Install dependencies
+npm install
+
+# Create environment file
+cp .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Add your keys to `.env.local`:
+```env
+GITHUB_TOKEN=your_github_token_here
+GROQ_API_KEY=your_groq_api_key_here
+```
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+```bash
+# Run development server
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Open [http://localhost:3000](http://localhost:3000)
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Roadmap
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- [x] Public repository support
+- [x] AI postmortem generation
+- [x] PDF export
+- [ ] GitHub OAuth — private repository support
+- [ ] Save and share reports via unique URL
+- [ ] Slack / Email notifications
+- [ ] Support for GitLab and Bitbucket
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## Why I Built This
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+DevOps engineers spend up to 30% of their week on repetitive tasks — writing incident reports is one of the most painful. PostGen eliminates that friction by automating the first draft so engineers can focus on fixing problems, not documenting them.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## License
+
+MIT — free to use and modify
+
+---
+
+<p align="center">Built by <a href="https://github.com/momagdyy">Mohamed Magdy</a></p>
